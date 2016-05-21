@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <header></header>
+
+		<h2>Register new user:</h2>
+		<% if (errMessage){ %>
+			<div class="error"><%= errMessage %></div>
+		<% } %>
+		<form action="/register" method="POST">
+			<p>
+				<label for="role">Login Type</label>
+				<select name="role" id="role">
+					<option value="orchestra_officer">Orchestra Officer</option>
+					<option value="musician">Musician</option>
+				</select>
+			</p>
+			<p id="orcName">
+				<label for="orcname">Orchestra Name</label>
+				<input type="text" name="orcname">
+			</p>
+			<p>
+				<label for="firstname">First Name</label>
+				<input type="text" name="firstname">
+			</p>
+			<p>
+				<label for="surname">Surname</label>
+				<input type="text" name="surname">
+			</p>
+			<p>
+				<label for="gender">Gender</label>
+				<select name="gender">
+					<option value="male">Male</option>
+					<option value="female ">Female</option>
+				</select>
+			</p>
+			<p>
+				<label for="email">Email</label>
+				<input type="email" name="email">
+			</p>
+			<p>
+				<label for="password">Password</label>
+				<input type="password" name="password">
+			</p>
+			<p>
+				<label for="repassword">Retype Password</label>
+				<input type="password" name="repassword">
+			</p>
+			<p>
+				<input type="submit" value="Register">
+			</p>
+		</form>
+	
+		<script src="/javascripts/jquery.js"></script>
+		<script src="/javascripts/register.js"></script>
+  </body>
+</html>
