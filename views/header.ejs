@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%= title %></title>
+	<link rel="stylesheet" href="/stylesheets/bootstrap.css">
+	<link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+	<header>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+ 		<div class="container">
+        <div class="navbar-header">
+            <a href="/"><h3 id="site-name">MultiLogin Demo</h3></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <% if (currentUser) { %>
+                <% if (currentUser.role === 'orchestra_officer') { %>
+                <li><a href="/members/add">Add Member</a></li>
+                <% } %>
+                <% } %>
+            </ul>
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    <% if (currentUser) { %>
+                        <li><a href="">Welcome <%=currentUser.email%> (<%=currentUser.role%>)</a>    </li>
+                        <li><a href="/logout">Logout</a></li>
+                    <% } else { %>
+                        <li><a href="/register">Register</a></li>    
+                        <li><a href="/login">Login</a></li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+  </div>
+  </header>

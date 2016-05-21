@@ -1,21 +1,10 @@
 <%- include('header.ejs')%>
 <div class="container">
-		<h3 class="col-sm-6 col-sm-offset-3">Register new user</h3>
+		<h3 class="col-sm-6 col-sm-offset-3">Register new member</h3>
 		<% if (errMessage){ %>
 			<div class="error"><%= errMessage %></div>
 		<% } %>
 		<form action="/register" method="POST" class="col-sm-6 col-sm-offset-3 well">
-			<p class="form-group">
-				<label for="role">Login Type</label>
-				<select name="role" id="role" class="form-control">
-					<option value="orchestra_officer">Orchestra Officer</option>
-					<option value="musician">Musician</option>
-				</select>
-			</p>
-			<p id="orcName" class="form-group">
-				<label for="orcname">Orchestra Name</label>
-				<input class="form-control" type="text" name="orcname">
-			</p>
 			<p class="form-group">
 				<label for="firstname">First Name</label>
 				<input class="form-control" type="text" name="firstname">

@@ -1,39 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title><%= title %></title>
-	<link rel='stylesheet' href='/stylesheets/style.css' />
-</head>
-<body>
-	<header></header>
-
-	<h2>Login user:</h2>
+<%- include('header.ejs')%>
+<div class="container">
+	<h2 class="col-sm-6 col-sm-offset-3">Login user:</h2>
 	<% if (errMessage){ %>
-	<div class="error"><%= errMessage %></div>
+	<div class="text-danger"><%= errMessage %></div>
 	<% } %>
-	<form action="/login" method="POST">
-		<p>
+	<form action="/login" method="POST" class="col-sm-6 col-sm-offset-3 well">
+		<p class="form-group">
 			<label for="role">Login Type</label>
-			<select name="role" id="role">
+			<select name="role" id="role" class="form-control">
 				<option value="orchestra_officer">Orchestra Officer</option>
 				<option value="musician">Musician</option>
+				<option value="member">Member</option>
 			</select>
 		</p>
 		
-		<p>
+		<p class="form-group">
 			<label for="email">Email</label>
-			<input type="email" name="email">
+			<input type="email" name="email" class="form-control">
 		</p>
-		<p>
+		<p class="form-group">
 			<label for="password">Password</label>
-			<input type="password" name="password">
+			<input type="password" name="password" class="form-control">
 		</p>
-		<p>
-			<input type="submit" value="Login">
+		<p class="form-group">
+			<input type="submit" value="Login" class="form-control btn btn-primary">
 		</p>
 	</form>
-	
-	<script src="/javascripts/jquery.js"></script>
-	<script src="/javascripts/register.js"></script>
-</body>
-</html>
+</div>
+<%- include('footer.ejs')%>

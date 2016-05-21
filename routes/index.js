@@ -4,9 +4,23 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/users');
 
+
+// Middleware
+
+router.use(function(req, res, next){
+	res.locals.title = "MultiLogin";
+	res.locals.errMessage =undefined;
+	if(req.session.currentUser){
+		delete req.session.currentUser.password;
+		res.locals.currentUser = req.session.currentUser
+	} else {
+		res.locals.currentUser = undefined;
+	}
+	next();
+})
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'MultiLogin Demo' });
+router.get('/', function(req, res) {
+  res.render('index');
 });
 
 // Register 
@@ -29,61 +43,125 @@ function sendVerificationEmail(email, verificationCode){
 }
 
 router.route('/register')
-	.get(function(req, res, next){
-		res.locals.title = 'MultiLogin Demo | Register';
-		res.locals.errMessage = false;
+	.get(function(req, res){
+		res.locals.title += ' - Register';
 		res.render('register')
 	})
-	.post(function(req, res, next){
+	.post(function(req, res){
 		if(req.body.password == req.body.repassword){
 
-			var randString = bcrypt.genSaltSync(); // generate random string to be used for verification
-			var pass_hash = bcrypt.hashSync(req.body.password, 10);
-
-			var newUser = new User({
-				role: req.body.role,
-				orchestraName: req.body.orcname,
-				firstname: req.body.firstname,
-				surname: req.body.surname,
-				gender: req.body.gender,
-				email: req.body.email,
-				password: pass_hash,
-				isActive: false,
-				verificationCode: randString
-			});
-
-			newUser.save(function(err){
-				if(err){
-					console.log(err.errmsg);
-					if(err.code === 11000){
-						res.locals.errMessage = 'Duplicate key error index (email, role)';
-					} else{
-						res.locals.errMessage = 'Somthing went wrong, please try again!';
+			// generate random string to be used for verification
+			// TODO: use MATH.random to generate the code
+			var randString = bcrypt.genSaltSync(); 
+			
+			var pass_hash;
+			// The next code will check igf this email is in the database 
+			// it will use the same password for the second role of the same email
+			User.findOne({email: req.body.email}, function(err, user){
+				if(!err){
+					if(!user){
+						pass_hash = bcrypt.hashSync(req.body.password, 10);
+					}else{
+						pass_hash = user.password;
 					}
-					res.locals.title = 'MultiLogin Demo | Register';
-					res.render('register');
-				} else{
-					res.locals.errMessage = false;
-					sendVerificationEmail(req.body.email, randString);
-					res.redirect('/');
+				console.log(pass_hash);
+				var newUser = new User({
+					role: req.body.role,
+					orchestraName: req.body.orcname,
+					firstname: req.body.firstname,
+					surname: req.body.surname,
+					gender: req.body.gender,
+					email: req.body.email,
+					password: pass_hash,
+					isActive: false,
+					verificationCode: randString
+				});
+				newUser.save(function(err){
+					if(err){
+						console.log("####", err);
+						if(err.code === 11000){
+							res.locals.errMessage = 'Duplicate key error index (email, role)';
+						} else{
+							res.locals.errMessage = err.errmsg;
+						}
+						res.locals.title += ' - Register';
+						res.render('register');
+					} else{
+						sendVerificationEmail(req.body.email, randString);
+						res.redirect('/');
+					}
+				});
+				}else{
+					console.log(err)
 				}
-			});
+			})
 		} else{
 			res.locals.errMessage = 'retyped password doesn\'t match';
-			res.locals.title = 'MultiLogin Demo | Register';
+			res.locals.title += ' - Register';
 			res.render('register');
 		}
 	})
+
 router.get("/verify/:code", function(req, res){
-	res.send(req.params.code);
+	User.find({verificationCode: req.params.code}, function(err, user){
+		if (!err) {
+			user = user[0];
+			user["isActive"] = true;
+			user["verificationCode"] = "";
+			User.update({_id: user._id}, user, function(err){
+				if(!err){
+					res.redirect('/login');
+				} else{
+					console.log(err)
+				}
+			});
+		} else {
+			console(err);
+		}
+	})
 })
 
 // Login
-// bcrypt.compareSync(myPlaintextPassword, hash);
 router.route('/login')
 	.get(function(req, res){
-		res.locals.title = 'MultiLogin Demo | Login';
-		res.locals.errMessage = false;
+		res.locals.title += ' - Login';
 		res.render('login')
+	})
+	.post(function(req, res){
+		User.findOne({email: req.body.email, role: req.body.role}, function(err, user){
+			if(!err){
+				if(user && user.isActive){
+					console.log("user is active")
+					if(bcrypt.compareSync(req.body.password, user.password)){
+						req.session.currentUser = user;
+						res.redirect("/")
+					} else{
+						res.locals.errMessage = "Wrong Password";
+					}
+				} else{
+					
+					res.locals.errMessage = "User not found or inactive user, please check your email box";
+				}
+			} else{
+				console.log(err);
+				res.locals.errMessage = err.errmsg;
+				res.locals.title += ' - Login';
+				res.render('login');
+			}
+			
+		})
+	})
+
+// Logout
+router.get('/logout', function(req, res){
+	delete req.session.currentUser;
+	res.redirect('/');
+})
+
+// register member
+router.route('/members/add')
+	.get(function(req, res){
+		res.locals.title +=' - register member';
+		res.render('member');
 	})
 module.exports = router;

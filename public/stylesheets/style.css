@@ -1,12 +1,13 @@
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px Ubuntu, sans-serif;
+}
+header{
+	margin-bottom: 75px;
 }
 
-a {
-  color: #00B7FF;
-}
-
-.error{
-	color: #FF0000;
+footer {
+    padding-right: 15px;
+    padding-left: 15px;
+    border-top: 1px solid #d7e0e2;
 }
