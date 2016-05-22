@@ -90,9 +90,11 @@ router.route('/register')
 					} else{
 						sendVerificationEmail(req.body.email, randString, function(err){
 							if(!err){
-								res.redirect('/register');
-							} else {
 								res.redirect('/');
+							} else {
+								res.locals.title += ' - Register';
+								res.locals.errMessage = err
+								res.render('register');
 							}
 						});
 						
