@@ -1,0 +1,18 @@
+<%- include('header.ejs')%>
+<div class="container">
+	<h2 class="col-sm-6 col-sm-offset-3">Enter your email to reset the password:</h2>
+	<% if (errMessage){ %>
+	<div class="col-sm-6 col-sm-offset-3 alert alert-danger"><%= errMessage %></div>
+	<% } %>
+	<form action="/reset" method="POST" class="col-sm-6 col-sm-offset-3 well">
+		<p class="form-group">
+			<label for="email">Email</label>
+			<input type="email" name="email" class="form-control">
+		</p>
+	
+		<p class="form-group">
+			<input type="submit" value="Send Password Reset Code" class="form-control btn btn-primary">
+		</p>
+	</form>
+</div>
+<%- include('footer.ejs')%>

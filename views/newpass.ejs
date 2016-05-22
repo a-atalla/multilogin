@@ -1,0 +1,25 @@
+<%- include('header.ejs')%>
+<div class="container">
+	<h2 class="col-sm-6 col-sm-offset-3">Type the new password:</h2>
+	<% if (errMessage){ %>
+	<div class="col-sm-6 col-sm-offset-3 alert alert-danger"><%= errMessage %></div>
+	<% } %>
+
+	<form action="/reset/new" method="POST" class="col-sm-6 col-sm-offset-3 well">
+		<p class="form-group">
+			<label for="password">Password</label>
+			<input type="password" name="password" class="form-control">
+		</p>
+		<p class="form-group">
+			<label for="password">Retype Password</label>
+			<input type="password" name="repassword" class="form-control">
+		</p>
+		<p class="form-group">
+			<input type="hidden" name="code" value="<%=resetCode%>">
+		</p>
+		<p class="form-group">
+			<input type="submit" value="Reset Password" class="form-control btn btn-primary">
+		</p>
+	</form>
+</div>
+<%- include('footer.ejs')%>

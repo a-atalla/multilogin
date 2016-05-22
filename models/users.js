@@ -15,7 +15,8 @@ var userSchema = new Schema({
 	password: {type: String, required: true },
 
 	isActive: Boolean,
-	verificationCode: String
+	verificationCode: String,
+	passwordResetCode: String
 });
 
 // set the (email,role) pair unique

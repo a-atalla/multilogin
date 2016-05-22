@@ -24,21 +24,24 @@ router.get('/', function(req, res) {
 });
 
 // Register 
-function sendVerificationEmail(email, verificationCode){
+function sendVerificationEmail(email, verificationCode, next){
 	var transporter = mailer.createTransport('smtps://your_email%40gmail.com:your_pass@smtp.gmail.com');
 
 	var mailOptions = {
-	    from: '"Sender Name" <sender@example.com>', // sender address
-	    to: email, // list of receivers
-	    subject: 'Email verification', // Subject line
-	    text: 'click the following link to verifiy your email address\n  http://127.0.0.1:3000/verify/'+verificationCode, // plaintext body
+	    from: '"Sender Name" <sender@example.com>',
+	    to: email,
+	    subject: 'Email verification',
+	    text: 'click the following link to verifiy your email address\n  http://127.0.0.1:3000/verify/'+verificationCode,
 	};
 
-	transporter.sendMail(mailOptions, function(error, info){
-	    if(error){
-	      return console.log(error);
+	transporter.sendMail(mailOptions, function(err, info){
+	    if(err){
+	      console.log(err);
+	      next(new Error(err));
+	    } else {
+	    	console.log('Message sent: ' + info.response);
+	    	next(null, 'Message sent: ' + info.response)
 	    }
-	    console.log('Message sent: ' + info.response);
 	});
 }
 
@@ -64,7 +67,6 @@ router.route('/register')
 					}else{
 						pass_hash = user.password;
 					}
-				console.log(pass_hash);
 				var newUser = new User({
 					role: req.body.role,
 					orchestraName: req.body.orcname,
@@ -86,8 +88,14 @@ router.route('/register')
 						res.locals.title += ' - Register';
 						res.render('register');
 					} else{
-						sendVerificationEmail(req.body.email, randString);
-						res.redirect('/');
+						sendVerificationEmail(req.body.email, randString, function(err){
+							if(!err){
+								res.redirect('/register');
+							} else {
+								res.redirect('/');
+							}
+						});
+						
 					}
 				});
 				}else{
@@ -164,5 +172,97 @@ router.route('/members/add')
 	.get(function(req, res){
 		res.locals.title +=' - register member';
 		res.render('member');
+	});
+
+//Reset Password
+function sendResetPasswordEmail(email, resetCode, next){
+	var transporter = mailer.createTransport('smtps://your_email%40gmail.com:your_pass@smtp.gmail.com');
+
+	var mailOptions = {
+	    from: '"Sender Name" <sender@example.com>',
+	    to: email,
+	    subject: 'Password Reset',
+	    text: 'click the following link to reset your password\n  http://127.0.0.1:3000/reset/'+resetCode, 
+	};
+
+	transporter.sendMail(mailOptions, function(err, info){
+	    if(err){
+	    	console.log(err);
+	    	next(new Error(err))
+	    } else {
+	    	console.log('Message sent: ' + info.response);
+	    	next(null, 'Message sent: ' + info.response)
+	  	}
+	});
+}
+
+router.route('/reset')
+	.get(function(req, res){
+		res.locals.title +=' - password reset';
+		res.render('reset');
 	})
+	.post(function(req, res){
+		User.find({email: req.body.email}, function(err, users){
+			if(!err){
+				if(users && users.length>0){
+					var passwordResetCode = bcrypt.genSaltSync().replace(/\//g, '');
+					users.forEach(function(user){
+						user['passwordResetCode'] = passwordResetCode;
+						User.update({_id: user._id}, user, function(err){
+							console.log("updated");
+						});
+					});
+					sendResetPasswordEmail(req.body.email, passwordResetCode, function(err){
+						if(!err){
+							res.redirect('/login');
+						} else{
+							res.locals.title += " - password reset"
+							res.locals.errMessage = err;
+							res.render('reset');
+						}
+					});
+					
+				} else{
+					console.log("user not found");
+					res.locals.errMessage = "This email is not registered";
+					res.render('reset')
+				}
+			} else{
+				console.log(err);
+				res.locals.errMessage = "Unknown Error";
+				res.render('reset');
+			}
+		})
+	})
+
+router.get("/reset/:code", function(req, res){
+	res.locals.title += "reset password";
+	res.locals.resetCode = req.params.code;
+	res.render('newpass');
+});
+
+router.post('/reset/new', function(req, res){
+	var resetCode = req.body.code;
+	var password = req.body.password;
+	var repassword = req.body.repassword;
+	if (password === repassword){
+		var pass_hash = bcrypt.hashSync(req.body.password, 10);
+		User.find({passwordResetCode: resetCode}, function(err, users){
+			if(!err){
+				if(users && users.length>0){
+					users.forEach(function(user){
+						user.passwordResetCode = '';
+						user.password = pass_hash;
+						User.update({_id: user._id}, user, function(err){
+							console.log(err);
+						});
+					})
+					res.redirect('/login')
+				}
+			}
+		});
+	}
+	
+})
+
 module.exports = router;
