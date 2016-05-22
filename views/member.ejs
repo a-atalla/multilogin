@@ -5,6 +5,7 @@
 			<div class="error"><%= errMessage %></div>
 		<% } %>
 		<form action="/register" method="POST" class="col-sm-6 col-sm-offset-3 well">
+			<input type="hidden" name="role" value="member">
 			<p class="form-group">
 				<label for="firstname">First Name</label>
 				<input class="form-control" type="text" name="firstname">

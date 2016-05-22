@@ -174,7 +174,7 @@ router.route('/members/add')
 	.get(function(req, res){
 		res.locals.title +=' - register member';
 		res.render('member');
-	});
+	})
 
 //Reset Password
 function sendResetPasswordEmail(email, resetCode, next){
