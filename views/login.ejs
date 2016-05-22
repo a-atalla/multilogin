@@ -2,7 +2,7 @@
 <div class="container">
 	<h2 class="col-sm-6 col-sm-offset-3">Login user:</h2>
 	<% if (errMessage){ %>
-	<div class="text-danger"><%= errMessage %></div>
+	<div class="col-sm-6 col-sm-offset-3 alert alert-danger"><%= errMessage %></div>
 	<% } %>
 	<form action="/login" method="POST" class="col-sm-6 col-sm-offset-3 well">
 		<p class="form-group">

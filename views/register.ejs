@@ -2,7 +2,7 @@
 <div class="container">
 		<h3 class="col-sm-6 col-sm-offset-3">Register new user</h3>
 		<% if (errMessage){ %>
-			<div class="error"><%= errMessage %></div>
+			<div class="alert alert-danger col-sm-6 col-sm-offset-3"><%= errMessage %></div>
 		<% } %>
 		<form action="/register" method="POST" class="col-sm-6 col-sm-offset-3 well">
 			<p class="form-group">

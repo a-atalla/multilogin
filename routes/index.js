@@ -36,7 +36,7 @@ function sendVerificationEmail(email, verificationCode){
 
 	transporter.sendMail(mailOptions, function(error, info){
 	    if(error){
-	        return console.log(error);
+	      return console.log(error);
 	    }
 	    console.log('Message sent: ' + info.response);
 	});
@@ -51,8 +51,8 @@ router.route('/register')
 		if(req.body.password == req.body.repassword){
 
 			// generate random string to be used for verification
-			// TODO: use MATH.random to generate the code
-			var randString = bcrypt.genSaltSync(); 
+			// and remove any '/' char to not corrupt the url
+			var randString = bcrypt.genSaltSync().replace(/\//g, ''); 
 			
 			var pass_hash;
 			// The next code will check igf this email is in the database 
@@ -78,7 +78,6 @@ router.route('/register')
 				});
 				newUser.save(function(err){
 					if(err){
-						console.log("####", err);
 						if(err.code === 11000){
 							res.locals.errMessage = 'Duplicate key error index (email, role)';
 						} else{
@@ -134,19 +133,21 @@ router.route('/login')
 					console.log("user is active")
 					if(bcrypt.compareSync(req.body.password, user.password)){
 						req.session.currentUser = user;
-						res.redirect("/")
+						res.redirect("/");
 					} else{
+						console.log("Wrong Password")
 						res.locals.errMessage = "Wrong Password";
 					}
 				} else{
-					
+					console.log("inactive user")
 					res.locals.errMessage = "User not found or inactive user, please check your email box";
+					res.locals.title += ' - Login';
+					res.render('login');
 				}
+				
 			} else{
 				console.log(err);
-				res.locals.errMessage = err.errmsg;
-				res.locals.title += ' - Login';
-				res.render('login');
+				res.locals.errMessage = "cannot open DB";
 			}
 			
 		})
