@@ -181,20 +181,20 @@ function sendResetPasswordEmail(email, resetCode, next){
 	var transporter = mailer.createTransport('smtps://your_email%40gmail.com:your_pass@smtp.gmail.com');
 
 	var mailOptions = {
-	    from: '"Sender Name" <sender@example.com>',
-	    to: email,
-	    subject: 'Password Reset',
-	    text: 'click the following link to reset your password\n  http://127.0.0.1:3000/reset/'+resetCode, 
+		from: '"Sender Name" <sender@example.com>',
+		to: email,
+		subject: 'Password Reset',
+		text: 'click the following link to reset your password\n  http://127.0.0.1:3000/reset/'+resetCode, 
 	};
 
 	transporter.sendMail(mailOptions, function(err, info){
-	    if(err){
-	    	console.log(err);
-	    	next(new Error(err))
-	    } else {
-	    	console.log('Message sent: ' + info.response);
-	    	next(null, 'Message sent: ' + info.response)
-	  	}
+		if(err){
+			console.log(err);
+			next(new Error(err))
+		} else {
+			console.log('Message sent: ' + info.response);
+			next(null, 'Message sent: ' + info.response)
+		}
 	});
 }
 
