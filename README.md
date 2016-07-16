@@ -1,5 +1,5 @@
 # multilogin
-My solution  testing scenarios for new [Sleighdogs](http://www.sld.gs) Developers
+My solution for the testing scenarios from [Sleighdogs](http://www.sld.gs) test for new developers
 # The Problem
 Multiple logins
 We require the developer to implement a sign­up/sign­in/password­reset workflows solution for 
